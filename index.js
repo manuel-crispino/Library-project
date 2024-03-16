@@ -20,42 +20,22 @@ let bookTitle =[ {title:"poor dad"}];
 let bookId=[{key:"olid",value: "OL26632040M",size:"M"}];
 
 
-const body = document.querySelector(`body`);
-
-const key = 'olid';
-const value = 'OL26632040M';
-const size = 'M';
-
-async function fetchImage(url) {
-  const img = new Image();
-  return new Promise((res, rej) => {
-    img.onload = () => res(img);
-    img.onerror = e => rej(e);
-    img.src = url;
-  });
-}
-
-const img = await fetchImage(
-  `https://covers.openlibrary.org/b/${key}/${value}-${size}.jpg?default=false`
-);
-img.width = '200';
-
-document.body.appendChild(img);
 
 
 
 app.get("/",async(req,res)=>{
    try {
     const title= bookTitle[0].title;
-   const limit=5;
-   const img = await fetchImage(`https://covers.openlibrary.org/b/${key}/${value}-${size}.jpg`);
-   const w = img.width=200;
-const result = await axios.get('https://openlibrary.org/search.json?title='+title+'&limit='+limit);
+   const limit=1;
+  const {key,value,size}=bookId[0];
+   const img = await axios.get(`https://covers.openlibrary.org/b/${key}/${value}-${size}.jpg`);
+   const result = await axios.get('https://openlibrary.org/search.json?title='+title+'&limit='+limit);
+const imgUrl=img.config.url;
 const books=result.data.docs;
-console.log(url)
+console.log(img.config.url)
     res.render('index',{
         books:books,
-       cover:img,
+       cover:imgUrl,
     });
 } catch(err){
         console.log(err)

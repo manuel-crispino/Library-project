@@ -14,11 +14,12 @@
 </div>
 <%-include("books.ejs")%>
 
-  <img src="" alt="img cover" width="200px"> 
+ 
  
 <div class="result-div">
     <%locals.books.forEach((book)=>{%>
         <div>
+            <img src="<%-locals.cover%>" alt="img cover" width="200px"> 
        <h1><%-book.title%></h1>
         </div>
     <div>
@@ -29,12 +30,7 @@
     <%});%>
 </div>        
    
-<script>
-    const img = document.querySelector(`img`);
 
-    img.src =
-      'https://covers.openlibrary.org/b/olid/OL26632040M-M.jpg?default=false';
-  </script>
 
 
 </div>
