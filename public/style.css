@@ -1,0 +1,74 @@
+body{
+    margin:0;
+}
+.body-div{
+    margin:0;
+    height: 100%;
+width: 100%;
+  background-image: url('data:image/svg+xml;utf8,<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 4000 2388.487" enable-background="new 0 0 4000 2388.487" xml:space="preserve"></svg>');  
+background-color: rgb(255, 255, 255);
+
+}
+.filter-container {
+    position: relative; /* Assicura che ci sia un elemento genitore posizionato */
+}
+.filter{
+    opacity: 0.4; 
+    filter: saturate(0.5);
+    margin:5rem 2rem;
+}
+
+.table{
+    margin: 0;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+  
+
+   height: 100%;
+   width:100% ;
+ 
+
+}
+.column1{
+    flex:1;
+    margin: 0 ;
+    padding-top:1rem;
+    text-align: center;
+    background-color: yellow;
+    border:1rem black;
+    height:5rem;
+}
+.column2{
+    flex:1;
+    margin: 0 ;
+    padding-top:1rem;
+    text-align: center;
+    background-color: rgb(255, 60, 0);
+    border:1rem black;
+    height:5rem;
+}
+.column3{
+    flex:1;
+    margin: 0 ;
+    padding-top:1rem;
+    text-align: center;
+    background-color: rgb(9, 255, 0);
+    border:1rem black;
+    height:5rem;
+}
+.result-div{
+    position:absolute;
+    top:10rem;
+    text-align: center;
+    margin:1% 2%;
+    padding: 0 2%;
+    z-index: 1;
+    width: 90%;
+}
+
+@media screen and (min-width:300px) and (max-width:500px) {
+    h1{
+        font-size:xx-small;
+    }
+}

@@ -1,0 +1,15 @@
+# Ignora i file generati automaticamente
+node_modules/
+dist/
+*.log
+
+# Ignora i file di configurazione locali
+.env
+*.env.local
+
+# Ignora i file di sistema
+.DS_Store
+Thumbs.db
+
+# Ignora file specifici
+secret.txt
