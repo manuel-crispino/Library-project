@@ -1,39 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Books Library </title>
-   <link rel="stylesheet" href="style.css">
-</head>
-<body>  <div class="body-div">
-    <div class="table">
-    <div class="column1"><p>filter</p><form action="/filter" method="get"><select name="filter" id=""><option  type="submit" value="best sellers">best sellers</option><option type="submit" value="crime">crime</option><option type="submit" value="finance">finance</option><option type="submit" value="romantic">romantic</option></select></form></div>
-    <div class="column2"><form action="/search-books"  method="get" ><p>Search Books</p><input id="input-title" name="bookTitle" type="text"><button method="submit">🔍</button></form></div> 
-    <div class="column3"><form action="/your-books"><p>Check your book-list</p><button>check your book list</button></form></div> 
-</div>
-<%-include("books.ejs")%>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Books Library
+        </title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="body-div">
+            <div class="table">
+                <div class="column1">
+                    <p>filter</p>
+                    <form action="/filter" method="get">
+                        <select name="filter" id="">
+                            <option type="submit" name="best-seller" value="best sellers">best sellers</option>
+                            <option type="submit"  name="crime"  value="crime">crime</option>
+                            <option type="submit"  name="finance" value="finance">finance</option>
+                            <option type="submit"  name="romantic" value="romantic">romantic</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="column2">
+                    <form action="/search" method="post">
+                        <p>Search Books</p><input id="input-title" name="bookTitle" placeholder="<%-err ? "book not found" : "" %>" type="text">
+                        <button method="submit">🔍</button>
+                    </form>
+                </div>
+                <div class="column3">
+                    <form action="/your-books">
+                        <p>Check your book-list</p>
+                        <button>check your book list</button>
+                    </form>
+                </div>
+            </div>
+            <%-include("books.ejs")%>
 
- 
- 
-<div class="result-div">
-    <%locals.books.forEach((book)=>{%>
-        <div>
-            <img src="<%-locals.cover%>" alt="img cover" width="200px"> 
-       <h1><%-book.title%></h1>
+            <div class="books-div">
+                <% if (locals.books){locals.books.forEach((book)=>{%>
+                    <div>
+                        <img src="<%-locals.cover%>" alt="img cover" width="200px">
+                    </div>
+                    <div>
+                        <h1><%-book.title%></h1>
+                    </div>
+                    <div>
+                        <p>
+                            <%-book.author_name%></p>
+                    </div>
+
+                <%})}else{%>
+                <div class="error-div">
+               <h1><%-err.message%></h1> 
+                </div>
+                <%}%>
+            </div>
+
         </div>
-    <div>
-    <p> <%-book.author_name%></p>
-    </div>
-
-    
-    <%});%>
-</div>        
-   
-
-
-
-</div>
-</body>
+    </body>
 
 </html>
