@@ -29,7 +29,7 @@ let bookId = [
     }
 ];
 
-async function getCover(coverKey) {
+async function getCover() {
     const {key, value, size} = bookId[0];
 
     try {
@@ -85,14 +85,16 @@ app.post("/search",async(req,res)=>{
     try{
 const result = await axios.get('https://openlibrary.org/search.json?title=' + title + '&limit=' + limit);
 const books = result.data.docs;
-const coverKey=books.map(book => book.edition_key[0])
+
+const coverKey=books.map(book => book.cover_edition_key);
 const key= "olid";
 const size="M";
 const img = await axios.get(`https://covers.openlibrary.org/b/${key}/${coverKey}-${size}.jpg`);
 const imgUrl = img.config.url;
 
-if(books.length > 0 && imgUrl.length > 0){
-console.log(imgUrl);
+if(books.length > 0 && imgUrl.length > 0 ){
+
+console.log(coverKey);
 res.render("index",{
     books:books,
     cover:imgUrl,
@@ -101,7 +103,7 @@ res.render("index",{
 });
 }
 else{
-    const err = new Error("No book found with this title = "+ title);
+    const err = new Error();
    res.render("index",{
     books:null,
     cover:null,
