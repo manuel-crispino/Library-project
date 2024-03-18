@@ -37,17 +37,29 @@
             <%-include("books.ejs")%>
 
             <div class="books-div">
-                <% if (locals.books){locals.books.forEach((book)=>{%>
-                    <div>
-                       <img src="<%-locals.cover%>" alt="img cover" width="200px">  
+                <% if (locals.books && locals.cover && locals.ratings ){books.forEach((book,index)=>{%>
+                    <div class="book">
+                       <img  id="cover-img" src="<%-locals.cover[index]%>" alt="img cover" width="200px">  
                     </div>
-                    <div>
+                    <div class="book1">
                         <h1><%-book.title%></h1>
+                        <h2> Ratings:</h2>
+                        <div id="stars">
+                        
+                            <% for (let i = 1; i < locals.ratings[index]+1; i++) { %>
+                                <svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <polygon points="12 2 15.09 8.32 22 9.26 17 14.13 18.18 21.14 12 18.52 5.82 21.14 7 14.13 2 9.26 8.91 8.32 12 2" fill="#FFD700" stroke="#000" stroke-width="2"/>
+                                </svg>
+                            <% } %>
+                        </div>
+                      
+
                     </div>
-                    <div>
+                    <div class="book2">
                         <p>
                             <%-book.author_name%></p>
                     </div>
+                    <hr>
 
                 <%})}else{%>
                 <div class="error-div">

@@ -16,108 +16,118 @@ app.set('views', join(__dirname, 'views'));
 app.use(express.static(join(__dirname, 'public')));
 app.use(express.urlencoded({extended: true}));
 
-let bookTitle = [
+let bookTitleArray = [
     {
         title: "poor dad"
     }
 ];
-let bookId = [
-    {
-        key: "olid",
-        value: "OL26632040M",
-        size: "M",
-    }
-];
+let bookId = [];
+
+let currentIndex = 0;
+let value;
+let bookTitle;
+
+function resetArray() {
+    bookId = [];
+
+}
 
 async function getCover() {
-    const {key, value, size} = bookId[0];
-
+    value = bookId[currentIndex];
     try {
-        const img = await axios.get(`https://covers.openlibrary.org/b/${key}/${value}-${size}.jpg`);
-        const imgUrl = img.config.url;
+        const imgUrl = await Promise.all(value.map(async(key) => {
+
+            const img = await axios.get(`https://covers.openlibrary.org/b/olid/${key}-M.jpg`);
+
+            return img.config.url;
+        }));
+        console.log(imgUrl);
         return imgUrl;
+
     } catch (err) {
-        console.log(err);
+        console.log(err)
     }
 }
 
 async function getTitle() {
 
-    const titleArray = bookTitle[0].title;
-    const limit = 1;
+    const limit = 3;
     try {
-                const result = await axios.get('https://openlibrary.org/search.json?title=' + titleArray + '&limit=' + limit);
-                const books = result.data.docs;
-                return books;
-          
-     
+       let ratings=[];
+        for (currentIndex; currentIndex < limit; currentIndex++) {
+         
+            bookTitle = bookTitleArray[currentIndex].title;
+            const result = await axios.get('https://openlibrary.org/search.json?title=' + bookTitle + '&limit=' + limit);
+           const books = result.data.docs;
+            const keyValue = books.map(book => book.cover_edition_key);
+            bookId.push(keyValue);
+          const  ratingsValue= books.map((book)=>Math.floor(book.ratings_average))
+        ratings.push(ratingsValue);
+         return {books,ratings};
+    }
     } catch (err) {
         console.log(err);
         return err;
     }
-
 }
 
 app.get("/", async(req, res) => {
     try {
-      
+        const {books,ratings} = await getTitle();
         const imgUrl = await getCover();
-        const books = await getTitle();
-
+        const extractedRatings = ratings[0]; 
+        console.log(extractedRatings)
         res.render('index', {
             books: books,
             cover: imgUrl,
-            err: null,
+            ratings:extractedRatings,
+            err: null
         });
+        resetArray();
     } catch (err) {
         console.log(err)
         res.render("index", {
             err: err,
             books: null,
+            ratings:null,
             cover: null
         });
     }
 });
 
-app.post("/search",async(req,res)=>{
+app.post("/search", async(req, res) => {
     const title = req.body.bookTitle;
-    const limit = 1;
-    try{
-const result = await axios.get('https://openlibrary.org/search.json?title=' + title + '&limit=' + limit);
-const books = result.data.docs;
+    const limit = 5;
+    try {
+        const result = await axios.get('https://openlibrary.org/search.json?title=' + title + '&limit=' + limit);
+        const books = result.data.docs;
+        value = books.map(book => book.cover_edition_key);
+        const img = await axios.get(`https://covers.openlibrary.org/b/${key}/${coverKey}-${size}.jpg`);
+        const imgUrl = img.config.url;
 
-const coverKey=books.map(book => book.cover_edition_key);
-const key= "olid";
-const size="M";
-const img = await axios.get(`https://covers.openlibrary.org/b/${key}/${coverKey}-${size}.jpg`);
-const imgUrl = img.config.url;
+        if (books.length > 0 && imgUrl.length > 0) {
 
-if(books.length > 0 && imgUrl.length > 0 ){
-
-console.log(coverKey);
-res.render("index",{
-    books:books,
-    cover:imgUrl,
-    err:null,
-
-});
-}
-else{
-    const err = new Error();
-   res.render("index",{
-    books:null,
-    cover:null,
-    err:err,
-   })
-}
-}
-    catch(err){
-console.log(err.message)
-res.render("index",{
-    books:null,
-    cover:null,
-    err:err,
-});
+            console.log(imgUrl);
+            res.render("index", {
+                books: books,
+                cover: value,
+                err: null
+            });
+        } else {
+            const err = new Error();
+            res.render("index", {
+                books: null,
+                cover: null,
+                err: err
+            })
+        }
+    } catch (err) {
+        console.log(err.message)
+        res.render("index", {
+            books: null,
+            cover: null,
+            err: err
+        });
     }
 });
 

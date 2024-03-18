@@ -58,15 +58,29 @@ background-color: rgb(255, 255, 255);
     height:5rem;
 }
 .books-div{
-    position:absolute;
-    top:10rem;
+    position:relative;
+    top:-60rem;
     text-align: center;
-    margin:1% 2%;
-    padding: 0 2%;
-    z-index: 1;
-    width: 90%;
+    margin-left: 25%;
+    width: 50%;
+    background-color: rgba(242, 241, 180, 0.4) ;
+   
 }
 
+.book
+{
+    padding-top: 2%;
+    z-index: 1;
+};
+.book1{
+    padding-top: 1%;
+    z-index: 1;  
+}
+
+.book2{
+    padding-bottom: 2%;
+    z-index: 1;  
+}
 .error-div{
     background-color: rgb(249, 242, 216);
    color: rgb(9, 6, 6);
@@ -78,3 +92,19 @@ background-color: rgb(255, 255, 255);
         font-size:xx-small;
     }
 }
+
+.star {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  
+  .star.active,
+  .star:hover {
+    fill: #ffcc00; /* Colore di riempimento interno quando attivo o in hover */
+  }
+  
+  .star path {
+    stroke: #000; /* Colore del bordo */
+    stroke-width: 2; /* Spessore del bordo */
+  }
