@@ -4,7 +4,7 @@ import {dirname, join} from "path";
 import {fileURLToPath} from "url";
 import pg from "pg";
 import axios from "axios";
-import fs from "fs";
+
 
 const port = 3000;
 
@@ -16,120 +16,348 @@ app.set('views', join(__dirname, 'views'));
 app.use(express.static(join(__dirname, 'public')));
 app.use(express.urlencoded({extended: true}));
 
-let bookTitleArray = [
-    {
-        title: "poor dad"
-    }
-];
-let bookId = [];
+//MAKE SURE YOU HAVE THE SAME VALUES OR EDIT WITH THE NEW VALUES AS NEEDED //
 
-let currentIndex = 0;
-let value;
-let bookTitle;
+const db=new pg.Client({
+    user: "postgres",
+    host: "localhost",
+   database:"library",
+   port:5432,
+   password:"",// add your database password here !//
 
-function resetArray() {
-    bookId = [];
+});
+
+db.connect()
+   .then(() => console.log('Connected to PostgreSQL database'))
+   .catch(err => console.error('Connection error', err));
+
+async function getTitle(user){ //this will get the name from the title and turn it into id //
+    try{
+    const bookTitleQuery= await  db.query("SELECT title_name FROM books WHERE user_id = (SELECT id FROM users WHERE id = $1)",[user]);
+    const bookTitle = bookTitleQuery.rows.map((row) => row.title_name );
+    if (bookTitle ){
+return bookTitle;
+}
+else{
+    console.log("error in getTitle")
+}}
+catch(err){
+    console.log(err.message)
+}
 
 }
 
-async function getCover() {
-    value = bookId[currentIndex];
-    try {
-        const imgUrl = await Promise.all(value.map(async(key) => {
+let userIndex=[];
 
-            const img = await axios.get(`https://covers.openlibrary.org/b/olid/${key}-M.jpg`);
+async function getUser(currentUser,password){
+    try{
+        if(password==="1234"){  
+const result=  await db.query("SELECT id FROM users WHERE LOWER(name) = $1",
+    [currentUser.toLowerCase()]);
+if(result.rows.length>0){
+return result.rows[0].id;
+}}
+else{
+    console.log("error in getUser");
+    return null;
+   
+}
+}
+catch(err){
+console.log(err.message)
 
-            return img.config.url;
+}};
+
+app.get("/",async(req,res)=>{
+
+ res.render("welcome");
+})
+
+app.post("/add-user",async(req,res)=>{
+    userIndex=[];
+  const  currentUser= req.body.userName;
+  const  password= req.body.userPassword;
+  const checkAccess= await getUser(currentUser,password);
+  console.log(currentUser,password)
+    try{
+        if(checkAccess){
+userIndex.push(currentUser,password)
+   res.redirect("/home")
+} else {
+    console.log("password or user name  not found access denied ")
+   const  accessDenied= new Error()
+    res.render("welcome",{
+        currentUser:null,
+        accessDenied:accessDenied,
+         err:null
+        })
+} ;
+}catch(err){
+    console.log(err.message)
+    res.status(404)
+}
+});
+
+
+
+app.get("/home",async(req,res)=>{
+    const limit=1;
+   const currentUser= userIndex[0];
+   const password= userIndex[1];
+const user= await getUser(currentUser,password);
+const bookTitle = await  getTitle(user);
+    try{
+    const title = await Promise.all(bookTitle.map(async(book) => {
+
+        const result = await axios.get('https://openlibrary.org/search.json?title=' + book + '&limit=' + limit);
+
+        return  result.data.docs[0];
+    }));
+  
+res.render("index",{
+    userBookIndex:bookTitle,
+user:currentUser,
+    userId: user,
+    books:title,
+    err:null
+   })
+}catch(err){    
+    console.log(err.message)
+    res.render("index",{
+        userBookIndex:null,
+        user:null,
+    userId: null,
+    books:null,
+    err:err
+    })
+}
+});
+
+app.get("/your-books",async(req,res)=>{
+    const limit=1;
+    const currentUser= userIndex[0];
+    const password= userIndex[1];
+ const user= await getUser(currentUser,password);
+ const bookTitle = await  getTitle(user);
+
+    try{
+        const title = await Promise.all(bookTitle.map(async(book) => {
+    
+            const result = await axios.get('https://openlibrary.org/search.json?title=' + book + '&limit=' + limit);
+    
+            return  result.data.docs[0];
         }));
-        console.log(imgUrl);
-        return imgUrl;
+    res.render("books",{
+        userBookIndex:bookTitle,
+            user:currentUser,
+                userId: user,
+                books:title,
+                err:null
+               })
+            }catch(err){    
+                console.log(err.message)
+                res.render("index",{
+                    userBookIndex:null,
+                    user:null,
+                userId: null,
+                books:null,
+                err:err
+                })
+            }})
 
-    } catch (err) {
-        console.log(err)
-    }
+
+app.post("/search",async(req,res)=>{
+      const limit=10;
+      const bookTitle=req.body.bookTitle;
+      const currentUser= userIndex[0];
+      const password= userIndex[1];
+      const user= await getUser(currentUser,password);
+      const booksIndex = await  getTitle(user);
+try{
+    const result = await axios.get('https://openlibrary.org/search.json?title=' + bookTitle + '&limit=' + limit);
+   const  books= result.data.docs;
+   const title=books.map((book)=>book);
+
+   res.render("index",{
+    userBookIndex:booksIndex,
+    user:currentUser,
+                userId: user,
+    books:title,
+    err:null
+   })
+  
+}catch(err){
+    res.render("index",{
+        userBookIndex:null,
+        user:null,
+                    userId: null,
+        books:null,
+        err:err
+       })
 }
+});
 
-async function getTitle() {
 
-    const limit = 3;
-    try {
-       let ratings=[];
-        for (currentIndex; currentIndex < limit; currentIndex++) {
-         
-            bookTitle = bookTitleArray[currentIndex].title;
-            const result = await axios.get('https://openlibrary.org/search.json?title=' + bookTitle + '&limit=' + limit);
-           const books = result.data.docs;
-            const keyValue = books.map(book => book.cover_edition_key);
-            bookId.push(keyValue);
-          const  ratingsValue= books.map((book)=>Math.floor(book.ratings_average))
-        ratings.push(ratingsValue);
-         return {books,ratings};
-    }
-    } catch (err) {
-        console.log(err);
-        return err;
-    }
+
+
+app.post("/add-book",async(req,res)=>{
+    const limit=10;
+const bookTitle= req.body.addBook;
+const bookCover= req.body.addBookCover;
+const currentUser= userIndex[0];
+const password= userIndex[1];
+const user= await getUser(currentUser,password);
+
+  try{
+    await db.query("INSERT  INTO books(user_id, title_name , cover_key) VALUES ((SELECT id FROM users WHERE id = $1), $2,$3)",
+[user,bookTitle,bookCover]
+);
+const booksIndex = await  getTitle(user);
+ const result = await axios.get('https://openlibrary.org/search.json?title=' + bookTitle+ '&limit=' + limit);
+    const  books= result.data.docs;
+  const title=books.map((book)=>book);
+
+res.render("index",{
+    userBookIndex:booksIndex,
+    user:currentUser,
+    userId: user,
+        books:title,
+        err:null
+    });
+
+} catch(err)
+{
+console.log(err)
+res.render("index",{
+    userBookIndex:null,
+    user:null,
+    userId: null,
+    books:null,
+    err:err
+}); 
 }
+});
 
-app.get("/", async(req, res) => {
+app.post("/delete-book",async (req,res)=>{
+
+    const bookTitleDelete= req.body.addBook;
+    const bookCover= req.body.addBookCover;
+    const currentUser= userIndex[0];
+    const password= userIndex[1];
+    const user= await getUser(currentUser,password);
+
     try {
-        const {books,ratings} = await getTitle();
-        const imgUrl = await getCover();
-        const extractedRatings = ratings[0]; 
-        console.log(extractedRatings)
-        res.render('index', {
-            books: books,
-            cover: imgUrl,
-            ratings:extractedRatings,
-            err: null
-        });
-        resetArray();
+        const deleteFromDb = await db.query("DELETE FROM books WHERE user_id = (SELECT id FROM users WHERE id = $1) AND title_name = $2 AND cover_key = $3",
+            [user, bookTitleDelete, bookCover]);
+
+        res.redirect("/your-books");
     } catch (err) {
-        console.log(err)
-        res.render("index", {
-            err: err,
-            books: null,
-            ratings:null,
-            cover: null
-        });
+        console.error(err);
+        res.redirect("/your-books");
     }
 });
 
-app.post("/search", async(req, res) => {
-    const title = req.body.bookTitle;
-    const limit = 5;
-    try {
-        const result = await axios.get('https://openlibrary.org/search.json?title=' + title + '&limit=' + limit);
-        const books = result.data.docs;
-        value = books.map(book => book.cover_edition_key);
-        const img = await axios.get(`https://covers.openlibrary.org/b/${key}/${coverKey}-${size}.jpg`);
-        const imgUrl = img.config.url;
+app.post("/register-user",async(req,res)=>{
+    userIndex=[];
+  const currentUser  = req.body.newUserName;
+  const password  = req.body.newUserPassword;
+  try{
+  if ( password === "1234"){
+   await db.query("INSERT INTO users(name) VALUES($1)",
+   [currentUser])
+   const checkAccess = await getUser(currentUser,password);
+   if(checkAccess){
+    userIndex.push(currentUser,password)
+    res.redirect("/home")
+    } else {
+    console.log("password or user name from registration  not found access denied ")
+    const  accessDenied= new Error()
+    res.render("welcome",{
+        currentUser:null,
+        accessDenied:accessDenied,
+         err:null
+        })
+    } 
+  }
+  else {
+    console.log("password or user name  not found access denied form registration ")
+    const  accessDenied= new Error()
+    res.render("welcome",{
+        currentUser:null,
+        accessDenied:accessDenied,
+         err:null
+    })
+};
+}catch(err){
+console.log(err.message)
+res.status(404)
+}
 
-        if (books.length > 0 && imgUrl.length > 0) {
-
-            console.log(imgUrl);
-            res.render("index", {
-                books: books,
-                cover: value,
-                err: null
-            });
-        } else {
-            const err = new Error();
-            res.render("index", {
-                books: null,
-                cover: null,
-                err: err
-            })
-        }
-    } catch (err) {
-        console.log(err.message)
-        res.render("index", {
-            books: null,
-            cover: null,
-            err: err
-        });
-    }
 });
+
+app.get("/edit-user-name",async(req,res)=>{
+    const user = userIndex[0];
+res.render("edit",{
+    user:user,
+    err:null
+})
+});
+
+app.get("/edit-user",async(req,res)=>{
+    const user = userIndex[0];
+res.render("save",{
+    user:user,
+    err:null
+})
+});
+
+app.post("/edit-user",async ( req,res)=>{
+   const oldName= userIndex[0];
+ const   user = req.body.editUser;
+ const password= "1234";
+const oldId= await getUser(oldName,password)
+
+ console.log(oldName,oldId)
+try{
+   const updateUser= await db.query( "UPDATE users  SET name = $1 WHERE id = $2",
+    [user,oldId]);
+    console.log(user,oldId)
+    userIndex=[];
+    userIndex.push(user,password);
+    res.redirect("/home");
+}
+catch(err){
+res.render("edit",{
+    err:err
+})
+}
+});
+
+app.post("/delete-user",async ( req,res)=>{
+ const user = req.body.deleteUser;
+  const password= "1234";
+
+ 
+ 
+ try{
+    const oldId= await getUser(user,password);
+
+         await db.query(
+        "DELETE FROM users WHERE id = $1",
+        [oldId]
+    );
+     console.log(user,oldId)
+     userIndex=[];
+     res.redirect("/");
+ }
+ catch(err){
+    console.log(err.message)
+ res.render("save",{
+     err:err
+ })
+ }
+ });
+
 
 app.listen(port, () => {
     console.log(`app listen on port ${port}`);

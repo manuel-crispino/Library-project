@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edit
+        </title>
+        <link rel="stylesheet" href="style.css">
+    </head> <% /* here the user can finally edit or delete his user name */%>
+    <body>
+            <div class="books-div">
+                <div>
+        
+                    <h1>Edit or delete </h1>
+              
+                 </div>
+
+                <div>   
+            <form action="/edit-user" method="post">
+                    <p>User Name </p> 
+                    <input type="text" name="editUser" value="<%-locals.user%>">
+                    <button type="">save</button>
+            </form>
+        </div>
+        <br>
+            <div>
+            <form action="/delete-user" method="post">
+                <input type="text" name="" value="<%-locals.user%>" readonly>
+                <input type="hidden" name="deleteUser" value="<%-locals.user%>">
+                <button type="submit"> Delete User: <%-locals.user%>  </button>
+               </form>
+            </div>
+        
+     
+        </div>
+    </body>
+
+</html>

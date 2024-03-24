@@ -1,110 +1,110 @@
-body{
-    margin:0;
-}
-.body-div{
-    margin:0;
-    height: 100%;
-width: 100%;
-  background-image: url('data:image/svg+xml;utf8,<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 4000 2388.487" enable-background="new 0 0 4000 2388.487" xml:space="preserve"></svg>');  
-background-color: rgb(255, 255, 255);
-
-}
-.filter-container {
-    position: relative; /* Assicura che ci sia un elemento genitore posizionato */
-}
-.filter{
-    opacity: 0.4; 
-    filter: saturate(0.5);
-    margin:5rem 2rem;
-}
-
-.table{
-    margin: 0;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-  
-
-   height: 100%;
-   width:100% ;
- 
-
-}
-.column1{
-    flex:1;
-    margin: 0 ;
-    padding-top:1rem;
-    text-align: center;
-    background-color: yellow;
-    border:1rem black;
-    height:5rem;
-}
-.column2{
-    flex:1;
-    margin: 0 ;
-    padding-top:1rem;
-    text-align: center;
-    background-color: rgb(255, 60, 0);
-    border:1rem black;
-    height:5rem;
-}
-.column3{
-    flex:1;
-    margin: 0 ;
-    padding-top:1rem;
-    text-align: center;
-    background-color: rgb(9, 255, 0);
-    border:1rem black;
-    height:5rem;
-}
-.books-div{
-    position:relative;
-    top:-60rem;
-    text-align: center;
-    margin-left: 25%;
-    width: 50%;
-    background-color: rgba(242, 241, 180, 0.4) ;
-   
-}
-
-.book
-{
-    padding-top: 2%;
-    z-index: 1;
-};
-.book1{
-    padding-top: 1%;
-    z-index: 1;  
-}
-
-.book2{
-    padding-bottom: 2%;
-    z-index: 1;  
-}
-.error-div{
-    background-color: rgb(249, 242, 216);
-   color: rgb(9, 6, 6);
-
-}
-
-@media screen and (min-width:300px) and (max-width:500px) {
-    h1{
-        font-size:xx-small;
+    body{
+        margin:0;
     }
-}
+ 
+    .body-div{
+        margin-bottom:2rem;
+        height: 100%;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
 
-.star {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-  }
-  
-  .star.active,
-  .star:hover {
-    fill: #ffcc00; /* Colore di riempimento interno quando attivo o in hover */
-  }
-  
-  .star path {
-    stroke: #000; /* Colore del bordo */
-    stroke-width: 2; /* Spessore del bordo */
-  }
+    }
+    .filter-container {
+        position: relative;  
+    }
+    .filter{
+        opacity: 0.4; 
+        filter: saturate(0.5);
+        margin:5rem 2rem;
+    }
+
+    .table{
+        margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width:100% ;
+    }
+    .column1{
+        flex:1;
+        margin: 0 ;
+        padding-top:1rem;
+        text-align: center;
+        background-color: yellow;
+        border:1rem black;
+        height:7rem;
+    }
+    .column2{
+        flex:1;
+        margin: 0 ;
+        padding-top:1rem;
+        text-align: center;
+        background-color: rgb(255, 60, 0);
+        border:1rem black;
+        height:7rem;
+    }
+    .column3{
+        flex:1;
+        margin: 0 ;
+        padding-top:1rem;
+        text-align: center;
+        background-color: rgb(9, 255, 0);
+        border:1rem black;
+        height:7rem;
+    }
+    .books-div{
+       margin-top:2%;
+        text-align: center;
+        margin-left: 25%;
+        width: 50%;
+        background-color: rgba(242, 241, 180, 0.4) ;
+        padding-top: 2%;
+        padding-bottom:2%;
+    
+    }
+
+    .book
+    {
+        padding-top: 2%;
+        padding-bottom: 2%;
+      
+    };
+    .book1{
+        padding-top: 1%;
+ padding-bottom:2%;
+    }
+
+    .book2{
+        padding-bottom: 2%;
+        
+    }
+    .error-div{
+        background-color: rgb(249, 242, 216);
+    color: rgb(9, 6, 6);
+
+    }
+
+    /*IS NOT REALLY USER FRIENDLY YOU CAN UPGRADE THIS */
+    @media screen and (min-width:300px) and (max-width:500px) {
+        h1{
+            font-size:xx-small;
+        }
+    }
+
+    .star {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    
+    /* THIS IS FOR REVIEWS YOU CAN IMPLEMENT YOUR OWN REVIEWS I HAVEN'T */
+    .star.active,
+    .star:hover {
+        fill: #ffcc00; 
+    }
+    
+    .star path {
+        stroke: #000; 
+        stroke-width: 2; 
+    }

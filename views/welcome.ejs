@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome
+        </title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+            <div class="books-div"> <% /*this is my logic for user login must be updated to a new logic for real use */%>
+                <div>  <% /* please understand this is not a real user login is just for educational purpose*/%>
+                    <%if(locals.accessDenied){%>
+        <h1> Access denied ! user name or password Not correct use 1234 as a password! and make sure your name is registered !</h1>
+                   <% }else{%>
+                    <h1> Access Into your account!</h1>
+                    <%}%>
+                 </div>
+
+                <div>
+            <form action="/add-user" method="post">
+    <p>Your user name </p> <input type="text" name="userName" > <% /*Add your user name here if you do not have a user name than register  */%>
+    <p>Add password (1234)</p> <input type="text" name="userPassword" >  <% /* the password is 1234 */%>
+    <div>
+        <button type="submit"> submit</button>
+        </div>
+            </form>
+        </div> 
+         <div>
+            <h1>Register New User</h1>
+         </div>
+         <div>
+            <form action="/register-user" method="post"> <% /*Register your new user name  */%>
+                <p>Add user name </p> <input type="text" name="newUserName" >
+                <p>Add password (1234)</p> <input type="text" name="newUserPassword" > <% /* password is 1234 */%>
+                <div> <% /* password is not implemented into a proper database if you want to upgrade than you should change the database logic  */%>
+                <button type="submit"> submit</button>
+                </div>
+                        </form>
+         </div>
+     
+        </div>
+    </body>
+
+</html>

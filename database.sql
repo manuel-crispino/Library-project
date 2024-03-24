@@ -1,0 +1,30 @@
+/*YOU CAN FOLLOW MY DATABASE LINE */
+/* CREATE NEW TABLE  BOOKS */
+
+--THIS IS A ONE TO ONE RELATION FEEL FREE TO TRY SOME MORE I HAVE DECIDED TO USE THIS FOR MY LOGIC-- 
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(20) NOT NULL
+);
+
+--ON DELETE CASCADE WILL CANCEL THE ALL BOOKS ONCE THE USER AS BEEN DELETED --
+CREATE TABLE books (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title_name VARCHAR(50),
+    cover_key VARCHAR(50)
+);
+
+--INSERT NEW DATA--
+INSERT INTO users(name) VALUES ('Jack');
+
+INSERT INTO books(user_id, title_name, cover_key) 
+VALUES (
+    (SELECT id FROM users WHERE name = 'Jack'), 
+    'Rich Dad, Poor Dad', 
+    'OL26632040M'
+);
+
+--JOIN TABLES AND VIEW DATA --
+SELECT * FROM users JOIN books ON users.id = books.user_id;

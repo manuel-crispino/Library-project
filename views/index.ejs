@@ -7,67 +7,90 @@
         </title>
         <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body> <% /* THIS IS THE  INDEX OF THE PROJECT WILL BE SHOWN THE BOOKS OF THE USER FORM HERE USER CAN SEE AND ADD NEW BOOKS */%>
         <div class="body-div">
             <div class="table">
                 <div class="column1">
-                    <p>filter</p>
-                    <form action="/filter" method="get">
-                        <select name="filter" id="">
-                            <option type="submit" name="best-seller" value="best sellers">best sellers</option>
-                            <option type="submit"  name="crime"  value="crime">crime</option>
-                            <option type="submit"  name="finance" value="finance">finance</option>
-                            <option type="submit"  name="romantic" value="romantic">romantic</option>
-                        </select>
-                    </form>
+                    <p><%-locals.user.charAt(0).toUpperCase() + user.slice(1)%> Library</p>
+                    <form action="/" method="get">
+                    <button type="submit">change user</button>
+                </form>
+                <form action="/edit-user-name" method="get"> <% /* HERE YOU CAN EDIT THE USER NAME WILL SEND YOU TO EDIT.EJS PAGE*/%>
+                    <button type="submit">Edit/Delete user</button>
+                </form>
                 </div>
                 <div class="column2">
                     <form action="/search" method="post">
                         <p>Search Books</p><input id="input-title" name="bookTitle" placeholder="<%-err ? "book not found" : "" %>" type="text">
-                        <button method="submit">🔍</button>
+                        <button method="submit">🔍</button> <% /* HERE THE USER CAN CHECK THE BOOKS YOU CAN UPGRADED TO FIND ALSO SIMILAR LETTERS  */%>
                     </form>
                 </div>
                 <div class="column3">
-                    <form action="/your-books">
-                        <p>Check your book-list</p>
-                        <button>check your book list</button>
+                    <form action="/your-books" method="get"> <% /*HERE USER CAN SEE HIS TOTALS BOOKS  YOU CAN UPDATED  TO MAKE IT VISUALLY BETTER */%>
+                        <p>Edit your books list</p>
+                        <p>Total books in your library : <%-locals.userBookIndex.length%> <button type="submit"> Edit</button></p>
+                        
                     </form>
                 </div>
             </div>
-            <%-include("books.ejs")%>
+            
 
-            <div class="books-div">
-                <% if (locals.books && locals.cover && locals.ratings ){books.forEach((book,index)=>{%>
-                    <div class="book">
-                       <img  id="cover-img" src="<%-locals.cover[index]%>" alt="img cover" width="200px">  
+            <div class="books-div"> <% /* here there is the logic to check get the data from the api i have tried more ways i think this is faster */%>
+            
+                  <%if (locals.books.length === 0 ){%>
+            <h1>Books not found ! </h1>
+            <p>If you have not add books yet. <br>
+                 you can start searching for books into the search bar .</p>
+                 <p>If you are searching the book but display this message than your book is not found please try with a different book ! </p>
+                  <%}else{%>
+                        <% locals.books.forEach((book)=>{%>
+                            <hr>
+                            <div class="book">
+                                <%if(typeof book.cover_edition_key === 'undefined'){%>
+                                    <img src="" alt="Image not available">
+                                    <% }else {%>
+                       <img  id="cover-img" src="https://covers.openlibrary.org/b/olid/<%-book.cover_edition_key%>-M.jpg" alt="img cover" width="200px">  
+                     
+                       <% }%>
                     </div>
                     <div class="book1">
                         <h1><%-book.title%></h1>
-                        <h2> Ratings:</h2>
-                        <div id="stars">
-                        
-                            <% for (let i = 1; i < locals.ratings[index]+1; i++) { %>
-                                <svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                    <polygon points="12 2 15.09 8.32 22 9.26 17 14.13 18.18 21.14 12 18.52 5.82 21.14 7 14.13 2 9.26 8.91 8.32 12 2" fill="#FFD700" stroke="#000" stroke-width="2"/>
-                                </svg>
-                            <% } %>
-                        </div>
-                      
-
-                    </div>
-                    <div class="book2">
+                        <h2>Reviews : </h2>
                         <p>
-                            <%-book.author_name%></p>
-                    </div>
-                    <hr>
-
-                <%})}else{%>
-                <div class="error-div">
-               <h1><%-err.message%></h1> 
+                            <%if (isNaN(book.ratings_average)){%>
+                                <p>No ratings available</p>
+                                <%}else{%>
+                        <%for(let i=1;i<book.ratings_average+1;i++){%>
+                            
+                            <svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <polygon points="12 2 15.09 8.32 22 9.26 17 14.13 18.18 21.14 12 18.52 5.82 21.14 7 14.13 2 9.26 8.91 8.32 12 2" fill="#FFD700" stroke="#000" stroke-width="2"/>
+                            </svg>
+                        <%}}%>
+                        <div>
+                            <form action="/add-book" method="post">
+                            <button type="submit"> add to read </button>
+                            <input type="hidden" name="addBook" value="<%-book.title%> ">
+                            <input type="hidden" name="addBookCover" value="<%-book.cover_edition_key%> ">
+                        </form>
+                        </div>
+                    </p>
+                    <h2>Author : <%-book.author_name%></h2>
+                    <%if(typeof book.language === 'undefined'){%>
+                        <h3>languages are not available</h3>
+                        <%}else{%>
+                    <h3>Available languages: </h3>
+                    <select name="" id="">
+                        <%book.language.forEach((language)=>{%>
+                    <option value=""> <%-language%></option>
+                <%});%>
+                </select>
+                       
+                    <% }})%>  
+                    
                 </div>
                 <%}%>
             </div>
-
+      
         </div>
     </body>
 

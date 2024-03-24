@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edit
+        </title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+            <div class="books-div">
+                <div> <% /*here the user can see the user name he will edit once clicked is going to render the save.ejs page  */%>
+        
+                    <h1>Here you can edit or delete your user name </h1>
+              
+                 </div>
+
+                <div>   
+            <form action="/edit-user" method="get">
+                    <p>User Name </p> 
+                    <input type="text" name="editUser" value="<%-locals.user%>" readonly>
+                    <button type="submit"> edit</button>
+            </form>
+        </div>
+        <br>
+            <div>
+        
+     
+        </div>
+    </body>
+
+</html>
